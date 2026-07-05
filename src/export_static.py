@@ -51,7 +51,8 @@ def main() -> None:
         "generado": date.today().isoformat(),
         "kpi": kpi,
         "serie_diaria": rows(con, """
-            SELECT fecha_de_firma::date::VARCHAR AS d, count(*)::BIGINT AS n,
+            SELECT date_trunc('week', fecha_de_firma)::date::VARCHAR AS d,
+                   count(*)::BIGINT AS n,
                    round(sum(valor_del_contrato)/1e9, 2) AS v
             FROM contratos_clean GROUP BY 1 ORDER BY 1
         """),

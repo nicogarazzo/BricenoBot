@@ -233,8 +233,9 @@
   <div class="wrap">
     <div class="sec-head rv"><span class="idx">01</span><h2>El pulso del gasto <em>público</em></h2></div>
     <p class="sec-sub rv">
-      Contratos firmados por día. Los picos abruptos no son ruido: históricamente coinciden
-      con cierres de vigencia y con la carrera contra la Ley de Garantías electorales.
+      Contratos firmados por semana durante los dos últimos periodos presidenciales.
+      Los picos abruptos no son ruido: coinciden con los arranques de vigencia y con la
+      carrera contra la Ley de Garantías electorales.
     </p>
     <div class="chart-frame rv">
       <div id="chart"></div>
@@ -292,7 +293,7 @@
 <section id="alertas">
   <div class="wrap">
     <div class="sec-head rv"><span class="idx">05</span><h2>Alertas <em>destacadas</em></h2></div>
-    <p class="sec-sub rv">Las señales de mayor severidad y valor detectadas en la muestra vigente.</p>
+    <p class="sec-sub rv">Las señales de mayor severidad y valor detectadas en el periodo analizado.</p>
     <div class="feed rv" id="feed"></div>
   </div>
   <hr class="rule">
@@ -347,7 +348,7 @@
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
   $('updated').textContent = 'Actualizado ' + D.generado;
-  $('periodo').textContent = 'Muestra · ' + D.kpi.desde + ' a ' + D.kpi.hasta;
+  $('periodo').textContent = 'Periodo · ' + D.kpi.desde + ' a ' + D.kpi.hasta;
 
   /* ----- KPIs ----- */
   const K = D.kpi;
