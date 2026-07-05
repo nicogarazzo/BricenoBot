@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BricenoBot · Radar Anticorrupción de la Contratación Pública Colombiana</title>
+<meta name="description" content="Detección automática de patrones de irregularidad en SECOP II usando datos abiertos oficiales. Código abierto, metodología auditable.">
+<style>
+  :root {
+    --bg: #0B0A08;
+    --panel: #100E0A;
+    --ink: #EAE4D6;
+    --dim: #9A927F;
+    --faint: #625C4E;
+    --line: rgba(234, 228, 214, 0.12);
+    --line-soft: rgba(234, 228, 214, 0.06);
+    --red: #D2492F;
+    --red-soft: rgba(210, 73, 47, 0.14);
+    --amber: #C9963B;
+    --amber-soft: rgba(201, 150, 59, 0.12);
+    --serif: Georgia, 'Times New Roman', Times, serif;
+    --mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--serif);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.55;
+  }
+  ::selection { background: var(--red); color: var(--bg); }
+  a { color: inherit; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+
+  .micro {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar { border-bottom: 1px solid var(--line); }
+  .topbar-in {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 0; gap: 16px; flex-wrap: wrap;
+  }
+  .topbar .dot {
+    display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--red); margin-right: 8px; vertical-align: 1px;
+    animation: pulse 2.4s infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  /* ---------- hero ---------- */
+  .hero { padding: 88px 0 64px; position: relative; overflow: hidden; }
+  .hero::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 70% 55% at 50% -10%, rgba(210, 73, 47, 0.08), transparent 70%);
+  }
+  .stamp {
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 1px solid var(--line); border-radius: 3px;
+    padding: 7px 14px; margin-bottom: 34px;
+  }
+  .hero h1 {
+    font-size: clamp(44px, 7vw, 84px);
+    font-weight: 400; line-height: 1.02; letter-spacing: -0.015em;
+    max-width: 900px;
+  }
+  .hero h1 em { font-style: italic; color: var(--red); }
+  .hero .sub {
+    margin-top: 26px; max-width: 620px;
+    font-size: 18px; color: var(--dim); line-height: 1.65;
+  }
+  .hero .meta { margin-top: 40px; display: flex; gap: 28px; flex-wrap: wrap; }
+
+  /* ---------- kpi band ---------- */
+  .kpis {
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    display: grid; grid-template-columns: repeat(5, 1fr);
+  }
+  .kpi { padding: 30px 26px; border-left: 1px solid var(--line); }
+  .kpi:first-child { border-left: none; }
+  .kpi .num {
+    font-family: var(--mono); font-size: clamp(22px, 2.6vw, 34px);
+    letter-spacing: -0.02em; margin-top: 10px; color: var(--ink);
+  }
+  .kpi .num small { font-size: 0.55em; color: var(--dim); letter-spacing: 0; }
+  .kpi.alert .num { color: var(--red); }
+
+  /* ---------- sections ---------- */
+  section { padding: 74px 0 10px; }
+  .sec-head { display: flex; align-items: baseline; gap: 18px; margin-bottom: 8px; }
+  .sec-head .idx { font-family: var(--mono); font-size: 12px; color: var(--red); }
+  .sec-head h2 { font-size: clamp(26px, 3.4vw, 38px); font-weight: 400; letter-spacing: -0.01em; }
+  .sec-head h2 em { font-style: italic; color: var(--dim); }
+  .sec-sub { color: var(--dim); max-width: 640px; margin-bottom: 40px; font-size: 15.5px; }
+  .rule { border: none; border-top: 1px solid var(--line); margin: 74px 0 0; }
+
+  /* ---------- chart ---------- */
+  .chart-frame { border: 1px solid var(--line); border-radius: 4px; padding: 26px 22px 14px; background: var(--panel); }
+  .chart-frame svg { width: 100%; height: auto; display: block; }
+  .chart-note { display: flex; justify-content: space-between; padding: 12px 4px 6px; flex-wrap: wrap; gap: 8px; }
+  .annot { color: var(--red); }
+
+  /* ---------- flags grid ---------- */
+  .flags { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line-soft); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+  .flag { background: var(--bg); padding: 26px 24px 28px; transition: background 0.25s; }
+  .flag:hover { background: var(--panel); }
+  .flag .code { font-family: var(--mono); font-size: 11px; color: var(--red); letter-spacing: 0.14em; }
+  .flag h3 { font-size: 18px; font-weight: 400; margin: 12px 0 6px; line-height: 1.3; }
+  .flag .count { font-family: var(--mono); font-size: 26px; margin: 14px 0 2px; }
+  .flag .count small { font-size: 12px; color: var(--dim); }
+  .flag p { font-size: 13px; color: var(--dim); line-height: 1.6; margin-top: 10px; }
+
+  /* ---------- tables ---------- */
+  .cols2 { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--faint); font-weight: 400;
+    text-align: left; padding: 0 10px 12px 0; border-bottom: 1px solid var(--line);
+  }
+  th.r, td.r { text-align: right; padding-right: 0; }
+  td { padding: 13px 10px 13px 0; border-bottom: 1px solid var(--line-soft); font-size: 14px; vertical-align: top; }
+  td.mono { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+  .scorebar { display: inline-block; height: 3px; background: var(--red); vertical-align: middle; margin-right: 10px; border-radius: 2px; }
+  .name-cell { max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* ---------- dept bars ---------- */
+  .bars { display: flex; flex-direction: column; gap: 14px; }
+  .bar-row { display: grid; grid-template-columns: 220px 1fr 110px; gap: 16px; align-items: center; }
+  .bar-row .lbl { font-size: 14px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-track { height: 5px; background: var(--line-soft); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; background: linear-gradient(90deg, var(--red), var(--amber)); border-radius: 3px; width: 0; transition: width 1.1s cubic-bezier(0.22, 1, 0.36, 1); }
+  .bar-row .val { font-family: var(--mono); font-size: 12px; color: var(--dim); text-align: right; }
+
+  /* ---------- alert feed ---------- */
+  .feed { border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+  .feed-item { display: grid; grid-template-columns: 84px 1fr 130px; gap: 20px; padding: 20px 24px; border-bottom: 1px solid var(--line-soft); background: var(--bg); transition: background 0.2s; }
+  .feed-item:last-child { border-bottom: none; }
+  .feed-item:hover { background: var(--panel); }
+  .feed-item .code { font-family: var(--mono); font-size: 11px; color: var(--red); letter-spacing: 0.1em; padding-top: 3px; }
+  .feed-item .who { font-size: 15px; }
+  .feed-item .what { font-size: 13px; color: var(--dim); margin-top: 5px; line-height: 1.6; }
+  .feed-item .amt { font-family: var(--mono); font-size: 13px; text-align: right; color: var(--amber); padding-top: 3px; white-space: nowrap; }
+
+  /* ---------- method / ethics ---------- */
+  .method { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+  .method p { color: var(--dim); font-size: 15px; margin-bottom: 16px; }
+  .method strong { color: var(--ink); font-weight: 400; font-style: italic; }
+  .ethic {
+    border-left: 2px solid var(--red); padding: 4px 0 4px 24px;
+    font-size: 17px; font-style: italic; color: var(--ink); line-height: 1.7;
+  }
+
+  /* ---------- cta / footer ---------- */
+  .cta { text-align: center; padding: 90px 0; }
+  .cta h2 { font-size: clamp(28px, 4vw, 44px); font-weight: 400; }
+  .cta h2 em { font-style: italic; color: var(--red); }
+  .btn {
+    display: inline-block; margin-top: 34px; padding: 15px 36px;
+    border: 1px solid var(--ink); border-radius: 2px;
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink); text-decoration: none; transition: all 0.25s;
+  }
+  .btn:hover { background: var(--ink); color: var(--bg); }
+  footer { border-top: 1px solid var(--line); padding: 30px 0 40px; }
+  .foot-in { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  footer a { color: var(--dim); text-decoration: none; border-bottom: 1px solid var(--line); }
+  footer a:hover { color: var(--ink); }
+
+  /* ---------- reveal ---------- */
+  .rv { opacity: 0; transform: translateY(14px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .rv.in { opacity: 1; transform: none; }
+
+  @media (max-width: 960px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .kpi { border-left: none; border-top: 1px solid var(--line); }
+    .kpi:nth-child(-n+2) { border-top: none; }
+    .kpi:nth-child(even) { border-left: 1px solid var(--line); }
+    .flags { grid-template-columns: repeat(2, 1fr); }
+    .cols2, .method { grid-template-columns: 1fr; }
+    .bar-row { grid-template-columns: 130px 1fr 90px; }
+  }
+  @media (max-width: 560px) {
+    .flags { grid-template-columns: 1fr; }
+    .feed-item { grid-template-columns: 60px 1fr; }
+    .feed-item .amt { grid-column: 2; text-align: left; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rv, .bar-fill { transition: none; }
+    .rv { opacity: 1; transform: none; }
+    .topbar .dot { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap topbar-in">
+    <span class="micro"><span class="dot"></span>Radar activo · SECOP II · Datos abiertos del Estado colombiano</span>
+    <span class="micro" id="updated"></span>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="stamp micro">BricenoBot · Veeduría ciudadana computacional</div>
+    <h1>La contratación pública, <em>vigilada</em> línea por línea.</h1>
+    <p class="sub">
+      Detección automática de patrones de irregularidad en la contratación estatal colombiana.
+      Banderas rojas estadísticas sobre los datos abiertos de SECOP II, con metodología
+      abierta, auditable y reproducible.
+    </p>
+    <div class="meta">
+      <span class="micro">Fuente · Colombia Compra Eficiente</span>
+      <span class="micro">Código abierto · MIT</span>
+      <span class="micro" id="periodo"></span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="kpis rv" id="kpis"></div>
+</div>
+
+<section id="pulso">
+  <div class="wrap">
+    <div class="sec-head rv"><span class="idx">01</span><h2>El pulso del gasto <em>público</em></h2></div>
+    <p class="sec-sub rv">
+      Contratos firmados por día. Los picos abruptos no son ruido: históricamente coinciden
+      con cierres de vigencia y con la carrera contra la Ley de Garantías electorales.
+    </p>
+    <div class="chart-frame rv">
+      <div id="chart"></div>
+      <div class="chart-note">
+        <span class="micro" id="chart-lo"></span>
+        <span class="micro annot" id="chart-peak"></span>
+        <span class="micro" id="chart-hi"></span>
+      </div>
+    </div>
+  </div>
+  <hr class="rule">
+</section>
+
+<section id="banderas">
+  <div class="wrap">
+    <div class="sec-head rv"><span class="idx">02</span><h2>Banderas <em>rojas</em></h2></div>
+    <p class="sec-sub rv">
+      Cada bandera es una regla estadística codificada en SQL y ejecutada sobre la totalidad
+      de los contratos ingestados. Una bandera es una señal que amerita revisión humana, nunca una acusación.
+    </p>
+    <div class="flags rv" id="flags"></div>
+  </div>
+  <hr class="rule">
+</section>
+
+<section id="riesgo">
+  <div class="wrap">
+    <div class="sec-head rv"><span class="idx">03</span><h2>Índice de <em>riesgo</em></h2></div>
+    <p class="sec-sub rv">
+      Score 0 a 100 por suma ponderada de banderas activas. Ordenado por score y valor bajo alerta.
+    </p>
+    <div class="cols2 rv">
+      <div>
+        <p class="micro" style="margin-bottom:18px">Entidades bajo mayor señal</p>
+        <table id="t-entidades"></table>
+      </div>
+      <div>
+        <p class="micro" style="margin-bottom:18px">Contratistas bajo mayor señal</p>
+        <table id="t-contratistas"></table>
+      </div>
+    </div>
+  </div>
+  <hr class="rule">
+</section>
+
+<section id="territorio">
+  <div class="wrap">
+    <div class="sec-head rv"><span class="idx">04</span><h2>Geografía de la <em>señal</em></h2></div>
+    <p class="sec-sub rv">Valor contractual bajo alerta según el departamento de la entidad compradora. Miles de millones de pesos.</p>
+    <div class="bars rv" id="dept-bars"></div>
+  </div>
+  <hr class="rule">
+</section>
+
+<section id="alertas">
+  <div class="wrap">
+    <div class="sec-head rv"><span class="idx">05</span><h2>Alertas <em>destacadas</em></h2></div>
+    <p class="sec-sub rv">Las señales de mayor severidad y valor detectadas en la muestra vigente.</p>
+    <div class="feed rv" id="feed"></div>
+  </div>
+  <hr class="rule">
+</section>
+
+<section id="metodo">
+  <div class="wrap">
+    <div class="sec-head rv"><span class="idx">06</span><h2>Método y <em>principios</em></h2></div>
+    <div class="method rv" style="margin-top:36px">
+      <div>
+        <p><strong>Solo datos públicos.</strong> Todo proviene de las APIs de datos abiertos que el propio
+        Estado colombiano publica: SECOP II vía datos.gov.co, de la Agencia Nacional de Contratación
+        Pública, Colombia Compra Eficiente.</p>
+        <p><strong>Metodología auditable.</strong> Cada bandera es una consulta SQL visible en el repositorio.
+        Cualquier persona puede reproducir cada número de esta página ejecutando tres comandos.</p>
+        <p><strong>Inspiración.</strong> Este proyecto industrializa la metodología de veeduría ciudadana
+        que consiste en revisar sistemáticamente el SECOP y cruzarlo con contexto público.</p>
+      </div>
+      <div class="ethic">
+        Una bandera roja es una hipótesis, no un veredicto. El sistema señala dónde mirar;
+        juzgar corresponde a los ciudadanos, a los periodistas y a los órganos de control.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap rv">
+    <h2>La transparencia es un <em>bien público</em>.</h2>
+    <p class="sec-sub" style="margin:18px auto 0; text-align:center">
+      El código, la taxonomía de 27 patrones de irregularidad y el diseño completo del sistema son abiertos.
+    </p>
+    <a class="btn" href="https://github.com/nicogarazzo/BricenoBot">Ver el código en GitHub</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-in">
+    <span class="micro">BricenoBot · Radar anticorrupción · Licencia MIT</span>
+    <span class="micro"><a href="https://www.datos.gov.co/Estad-sticas-Nacionales/SECOP-II-Contratos-Electr-nicos/jbjy-vk9h">Dataset fuente: SECOP II jbjy-vk9h</a></span>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  const D = window.DATA;
+  if (!D) return;
+  const $ = (id) => document.getElementById(id);
+  const nf = new Intl.NumberFormat('es-CO');
+  const fmtBn = (v) => '$' + (v / 1e12).toFixed(1).replace('.', ',') + ' B';
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  $('updated').textContent = 'Actualizado ' + D.generado;
+  $('periodo').textContent = 'Muestra · ' + D.kpi.desde + ' a ' + D.kpi.hasta;
+
+  /* ----- KPIs ----- */
+  const K = D.kpi;
+  $('kpis').innerHTML = [
+    ['Contratos analizados', nf.format(K.contratos), ''],
+    ['Valor total', fmtBn(K.valor_total), '<small> COP</small>'],
+    ['Valor sin competencia', Math.round(K.pct_sin_competencia) + '<small> %</small>', ''],
+    ['Alertas activas', nf.format(K.alertas), '', 'alert'],
+    ['Valor bajo alerta', fmtBn(K.valor_alerta), '<small> COP</small>', 'alert'],
+  ].map(([l, v, suf, cls]) =>
+    `<div class="kpi ${cls || ''}"><div class="micro">${l}</div><div class="num">${v}${suf || ''}</div></div>`
+  ).join('');
+
+  /* ----- serie diaria (SVG area) ----- */
+  const S = D.serie_diaria;
+  const W = 1080, H = 260, P = 8;
+  const maxN = Math.max(...S.map((r) => r.n));
+  const x = (i) => P + (i / (S.length - 1)) * (W - 2 * P);
+  const y = (n) => H - P - (n / maxN) * (H - 2 * P - 20);
+  const pts = S.map((r, i) => x(i).toFixed(1) + ',' + y(r.n).toFixed(1)).join(' ');
+  const peakIdx = S.findIndex((r) => r.n === maxN);
+  const grid = [0.25, 0.5, 0.75].map((f) =>
+    `<line x1="${P}" x2="${W - P}" y1="${y(maxN * f)}" y2="${y(maxN * f)}" stroke="rgba(234,228,214,0.06)" stroke-width="1"/>`
+  ).join('');
+  $('chart').innerHTML =
+    `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Contratos firmados por día">
+      <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#D2492F" stop-opacity="0.35"/>
+        <stop offset="100%" stop-color="#D2492F" stop-opacity="0"/>
+      </linearGradient></defs>
+      ${grid}
+      <polygon points="${P},${H - P} ${pts} ${W - P},${H - P}" fill="url(#g)"/>
+      <polyline points="${pts}" fill="none" stroke="#D2492F" stroke-width="1.6" stroke-linejoin="round"/>
+      <circle cx="${x(peakIdx)}" cy="${y(maxN)}" r="3.5" fill="#EAE4D6"/>
+    </svg>`;
+  $('chart-lo').textContent = S[0].d;
+  $('chart-hi').textContent = S[S.length - 1].d;
+  $('chart-peak').textContent = 'Pico: ' + nf.format(maxN) + ' contratos el ' + S[peakIdx].d;
+
+  /* ----- banderas ----- */
+  $('flags').innerHTML = D.banderas.map((f) =>
+    `<div class="flag">
+      <span class="code">${f.codigo}</span>
+      <h3>${esc(f.bandera)}</h3>
+      <div class="count">${nf.format(f.n)} <small>alertas · $${nf.format(Math.round(f.v))} mil M</small></div>
+      <p>${esc(f.descripcion)}</p>
+    </div>`
+  ).join('');
+
+  /* ----- rankings ----- */
+  const rankRows = (rows) => rows.map((r) =>
+    `<tr>
+      <td class="name-cell" title="${esc(r.nombre)}">${esc(r.nombre)}</td>
+      <td class="mono"><span class="scorebar" style="width:${r.score * 0.42}px"></span>${r.score}</td>
+      <td class="mono r">$${nf.format(Math.round(r.v))}</td>
+    </tr>`
+  ).join('');
+  const head = '<thead><tr><th>Nombre</th><th>Score</th><th class="r">Bajo alerta (mil M)</th></tr></thead>';
+  $('t-entidades').innerHTML = head + '<tbody>' + rankRows(D.top_entidades) + '</tbody>';
+  $('t-contratistas').innerHTML = head + '<tbody>' + rankRows(D.top_contratistas) + '</tbody>';
+
+  /* ----- departamentos ----- */
+  const maxD = Math.max(...D.departamentos.map((r) => r.v));
+  $('dept-bars').innerHTML = D.departamentos.map((r) =>
+    `<div class="bar-row">
+      <span class="lbl">${esc(r.d)}</span>
+      <div class="bar-track"><div class="bar-fill" data-w="${(100 * r.v / maxD).toFixed(1)}"></div></div>
+      <span class="val">$${nf.format(Math.round(r.v))}</span>
+    </div>`
+  ).join('');
+
+  /* ----- feed ----- */
+  $('feed').innerHTML = D.alertas_top.map((a) =>
+    `<div class="feed-item">
+      <span class="code">${a.codigo}</span>
+      <div>
+        <div class="who">${esc(a.entidad || a.contratista)}</div>
+        <div class="what">${esc(a.detalle)}</div>
+      </div>
+      <span class="amt">$${nf.format(Math.round(a.v))} mil M</span>
+    </div>`
+  ).join('');
+
+  /* ----- reveal on scroll ----- */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('in');
+      e.target.querySelectorAll('.bar-fill').forEach((b) => { b.style.width = b.dataset.w + '%'; });
+      io.unobserve(e.target);
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.rv').forEach((el) => io.observe(el));
+})();
+</script>
+</body>
+</html>

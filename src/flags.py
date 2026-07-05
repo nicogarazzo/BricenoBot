@@ -27,7 +27,7 @@ FLAGS: dict[str, str] = {
             documento_proveedor,
             anio,
             count(*) || ' contratos sin competencia con la misma entidad en ' || anio
-                || ' que suman $' || round(sum(valor_del_contrato)/1e6) || 'M' AS detalle,
+                || ' que suman $' || round(sum(valor_del_contrato)/1e6)::BIGINT || 'M' AS detalle,
             sum(valor_del_contrato) AS valor_cop,
             25 AS severidad
         FROM contratos_clean
@@ -54,8 +54,8 @@ FLAGS: dict[str, str] = {
             a.proveedor,
             a.documento_proveedor,
             a.anio,
-            'Facturó $' || round(a.total/1e6) || 'M en ' || a.anio
-                || ' vs $' || round(b.total/1e6) || 'M el año anterior ('
+            'Facturó $' || round(a.total/1e6)::BIGINT || 'M en ' || a.anio
+                || ' vs $' || round(b.total/1e6)::BIGINT || 'M el año anterior ('
                 || round(a.total / b.total, 1) || 'x)' AS detalle,
             a.total AS valor_cop,
             20 AS severidad
@@ -119,7 +119,7 @@ FLAGS: dict[str, str] = {
             anio,
             'HHI ' || round(sum((v_prov / v_total) ** 2), 2)
                 || ' con ' || any_value(n_total) || ' contratos por $'
-                || round(any_value(v_total)/1e6) || 'M' AS detalle,
+                || round(any_value(v_total)/1e6)::BIGINT || 'M' AS detalle,
             any_value(v_total) AS valor_cop,
             20 AS severidad
         FROM participacion
@@ -141,7 +141,7 @@ FLAGS: dict[str, str] = {
             anio,
             count(*) || ' contratos de prestación de servicios con '
                 || count(DISTINCT nit_entidad) || ' entidades distintas en ' || anio
-                || ' por $' || round(sum(valor_del_contrato)/1e6) || 'M' AS detalle,
+                || ' por $' || round(sum(valor_del_contrato)/1e6)::BIGINT || 'M' AS detalle,
             sum(valor_del_contrato) AS valor_cop,
             15 AS severidad
         FROM contratos_clean
@@ -162,8 +162,8 @@ FLAGS: dict[str, str] = {
             NULL AS documento_proveedor,
             anio,
             round(100 * sum(CASE WHEN es_sin_competencia THEN valor_del_contrato ELSE 0 END)
-                / sum(valor_del_contrato)) || '% del valor adjudicado sin competencia ('
-                || count(*) || ' contratos, $' || round(sum(valor_del_contrato)/1e6) || 'M)' AS detalle,
+                / sum(valor_del_contrato))::BIGINT || '% del valor adjudicado sin competencia ('
+                || count(*) || ' contratos, $' || round(sum(valor_del_contrato)/1e6)::BIGINT || 'M)' AS detalle,
             sum(CASE WHEN es_sin_competencia THEN valor_del_contrato ELSE 0 END) AS valor_cop,
             15 AS severidad
         FROM contratos_clean
@@ -184,7 +184,7 @@ FLAGS: dict[str, str] = {
             proveedor_adjudicado AS proveedor,
             documento_proveedor,
             anio,
-            'Contrato ' || id_contrato || ' por $' || round(valor_del_contrato/1e6)
+            'Contrato ' || id_contrato || ' por $' || round(valor_del_contrato/1e6)::BIGINT
                 || 'M con objeto genérico: '
                 || left(objeto_del_contrato, 120) AS detalle,
             valor_del_contrato AS valor_cop,
@@ -210,7 +210,7 @@ FLAGS: dict[str, str] = {
             'Contrato ' || id_contrato || ' con ' || dias_adicionados
                 || ' días adicionados sobre plazo original de '
                 || datediff('day', fecha_de_inicio_del_contrato, fecha_de_fin_del_contrato)
-                || ' días ($' || round(valor_del_contrato/1e6) || 'M)' AS detalle,
+                || ' días ($' || round(valor_del_contrato/1e6)::BIGINT || 'M)' AS detalle,
             valor_del_contrato AS valor_cop,
             10 AS severidad
         FROM contratos_clean
