@@ -85,16 +85,16 @@ def fetch_page(
         "$limit": limit,
         "$offset": offset,
     }
-    for attempt in range(5):
+    for attempt in range(8):
         try:
-            resp = session.get(BASE_URL, params=params, timeout=120)
+            resp = session.get(BASE_URL, params=params, timeout=180)
             resp.raise_for_status()
             return resp.json()
         except (requests.RequestException, ValueError) as exc:
             wait = 2**attempt
-            print(f"  reintento {attempt + 1}/5 en {wait}s ({exc})", file=sys.stderr)
+            print(f"  reintento {attempt + 1}/8 en {wait}s ({exc})", file=sys.stderr)
             time.sleep(wait)
-    raise RuntimeError(f"API no respondió tras 5 intentos (offset={offset})")
+    raise RuntimeError(f"API no respondió tras 8 intentos (offset={offset})")
 
 
 def normalize(df: pd.DataFrame) -> pd.DataFrame:
@@ -164,6 +164,7 @@ def ingest(max_rows: int | None, desde: date | None = None) -> None:
                 offset += len(rows)
                 if len(rows) < PAGE_SIZE:
                     break
+                time.sleep(0.5)  # cortesía con la API en corridas largas
             total += mes_total
             mins = (time.time() - t0) / 60
             print(f"{w_start[:7]}: {mes_total:>8,} contratos (acumulado {total:>10,}, {mins:.0f} min)",
