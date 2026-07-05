@@ -1,5 +1,7 @@
 # BricenoBot
 
+**Dashboard público: https://nicogarazzo.github.io/BricenoBot/**
+
 Radar anticorrupción sobre la contratación pública colombiana. Detecta patrones de irregularidad en SECOP II usando datos abiertos oficiales, banderas rojas codificadas y un dashboard de priorización.
 
 Inspirado en la metodología de veeduría ciudadana de revisión sistemática del SECOP: este proyecto industrializa ese trabajo con cruces masivos de datos y detección estadística.
@@ -34,12 +36,21 @@ streamlit run app.py
 ## Estructura
 
 ```
-DESIGN.md          Diseño completo: taxonomía de irregularidades, fuentes, arquitectura
-src/ingest.py      Ingesta SODA API → DuckDB
-src/flags.py       Motor de banderas rojas y scoring
-src/db.py          Utilidades de base de datos
-app.py             Dashboard Streamlit
-data/              Base DuckDB local (no versionada)
+DESIGN.md              Diseño completo: taxonomía de irregularidades, fuentes, arquitectura
+src/ingest.py          Ingesta SODA API → DuckDB
+src/flags.py           Motor de banderas rojas y scoring
+src/export_static.py   Exporta agregados a docs/data.js para el sitio público
+src/db.py              Utilidades de base de datos
+app.py                 Dashboard Streamlit (exploración local)
+docs/                  Dashboard público estático (GitHub Pages)
+data/                  Base DuckDB local (no versionada)
+```
+
+Para actualizar el dashboard público tras una nueva ingesta:
+
+```bash
+python -m src.flags && python -m src.export_static
+git add docs/data.js && git commit -m "Actualizar datos del dashboard" && git push
 ```
 
 ## Fuentes de datos
