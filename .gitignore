@@ -1,0 +1,21 @@
+# Data
+data/
+*.duckdb
+*.duckdb.wal
+*.csv
+*.parquet
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
+# OS / editors
+.DS_Store
+.vscode/
+.idea/
+
+# Secrets
+.env
