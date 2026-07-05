@@ -12,6 +12,7 @@ Inspirado en la metodología de veeduría ciudadana de revisión sistemática de
 - Ejecuta un motor de banderas rojas (fraccionamiento, concentración, picos pre-Ley de Garantías, contratistas pulpo, adjudicaciones relámpago y más).
 - Calcula un score de riesgo 0-100 por contrato, contratista y entidad.
 - Presenta todo en un dashboard Streamlit: radar general, feed de alertas, perfiles y vista temporal.
+- Produce informes y expedientes reproducibles en [`informes/`](informes/), como [El afán de enero: 486.013 contratos en un mes](informes/2026-01-el-afan-de-enero.md).
 
 ## Inicio rápido
 
@@ -40,8 +41,10 @@ DESIGN.md              Diseño completo: taxonomía de irregularidades, fuentes,
 src/ingest.py          Ingesta SODA API → DuckDB
 src/flags.py           Motor de banderas rojas y scoring
 src/export_static.py   Exporta agregados a docs/data.js para el sitio público
+src/expedientes.py     Expedientes de las alertas más severas para validación manual
 src/db.py              Utilidades de base de datos
 app.py                 Dashboard Streamlit (exploración local)
+informes/              Informes y expedientes generados sobre la base completa
 docs/                  Dashboard público estático (GitHub Pages)
 data/                  Base DuckDB local (no versionada)
 ```
