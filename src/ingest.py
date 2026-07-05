@@ -4,12 +4,14 @@ Dataset principal: SECOP II - Contratos Electrónicos (jbjy-vk9h).
 Fuente: Agencia Nacional de Contratación Pública, Colombia Compra Eficiente.
 
 Uso:
-    python -m src.ingest --limit 50000     # muestra (contratos más recientes)
-    python -m src.ingest --full            # dataset completo (~5.6M filas)
+    python -m src.ingest --limit 50000       # muestra (contratos más recientes)
+    python -m src.ingest --full              # dataset completo (~5.6M filas)
+    python -m src.ingest --desde 2018-08-07  # desde una fecha (paginado por mes)
 """
 import argparse
 import sys
 import time
+from datetime import date
 
 import pandas as pd
 import requests
@@ -65,12 +67,21 @@ DATE_COLS = [
 ]
 
 
-def fetch_page(offset: int, limit: int, session: requests.Session) -> list[dict]:
+# Socrata ordena los NULL primero en DESC: siempre hay que excluirlos
+BASE_WHERE = "fecha_de_firma IS NOT NULL AND valor_del_contrato > 0"
+
+
+def fetch_page(
+    offset: int,
+    limit: int,
+    session: requests.Session,
+    where: str = BASE_WHERE,
+    order: str = "fecha_de_firma DESC",
+) -> list[dict]:
     params = {
         "$select": ",".join(COLUMNS),
-        # Socrata ordena los NULL primero en DESC: hay que excluirlos
-        "$where": "fecha_de_firma IS NOT NULL AND valor_del_contrato > 0",
-        "$order": "fecha_de_firma DESC",
+        "$where": where,
+        "$order": order,
         "$limit": limit,
         "$offset": offset,
     }
@@ -105,31 +116,73 @@ def normalize(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def ingest(max_rows: int | None) -> None:
+def insert(con, df: pd.DataFrame, created: bool) -> bool:
+    if not created:
+        con.execute("CREATE TABLE contratos AS SELECT * FROM df")
+    else:
+        con.execute("INSERT INTO contratos SELECT * FROM df")
+    return True
+
+
+def month_windows(desde: date) -> list[tuple[str, str]]:
+    """Ventanas mensuales [inicio, fin) desde una fecha hasta hoy."""
+    windows = []
+    y, m = desde.year, desde.month
+    start = desde.isoformat()
+    while date(y, m, 1) <= date.today():
+        y2, m2 = (y + 1, 1) if m == 12 else (y, m + 1)
+        end = date(y2, m2, 1).isoformat()
+        windows.append((start, end))
+        y, m = y2, m2
+        start = date(y, m, 1).isoformat()
+    return windows
+
+
+def ingest(max_rows: int | None, desde: date | None = None) -> None:
     con = connect()
     con.execute("DROP TABLE IF EXISTS contratos")
     session = requests.Session()
     session.headers["Accept"] = "application/json"
+    total, created = 0, False
+    t0 = time.time()
 
-    offset, total, created = 0, 0, False
-    while True:
-        limit = PAGE_SIZE if max_rows is None else min(PAGE_SIZE, max_rows - total)
-        if limit <= 0:
-            break
-        print(f"Descargando filas {offset:,} a {offset + limit:,}...")
-        rows = fetch_page(offset, limit, session)
-        if not rows:
-            break
-        df = normalize(pd.DataFrame(rows))
-        if not created:
-            con.execute("CREATE TABLE contratos AS SELECT * FROM df")
-            created = True
-        else:
-            con.execute("INSERT INTO contratos SELECT * FROM df")
-        total += len(rows)
-        offset += len(rows)
-        if len(rows) < limit:
-            break
+    if desde is not None:
+        # Paginación particionada por mes: evita offsets profundos de Socrata
+        # y permite ver el progreso. Orden ASC para recorrer cronológicamente.
+        for w_start, w_end in month_windows(desde):
+            where = (
+                f"{BASE_WHERE} AND fecha_de_firma >= '{w_start}T00:00:00' "
+                f"AND fecha_de_firma < '{w_end}T00:00:00'"
+            )
+            offset, mes_total = 0, 0
+            while True:
+                rows = fetch_page(offset, PAGE_SIZE, session, where, "fecha_de_firma ASC")
+                if not rows:
+                    break
+                created = insert(con, normalize(pd.DataFrame(rows)), created)
+                mes_total += len(rows)
+                offset += len(rows)
+                if len(rows) < PAGE_SIZE:
+                    break
+            total += mes_total
+            mins = (time.time() - t0) / 60
+            print(f"{w_start[:7]}: {mes_total:>8,} contratos (acumulado {total:>10,}, {mins:.0f} min)",
+                  flush=True)
+    else:
+        offset = 0
+        while True:
+            limit = PAGE_SIZE if max_rows is None else min(PAGE_SIZE, max_rows - total)
+            if limit <= 0:
+                break
+            print(f"Descargando filas {offset:,} a {offset + limit:,}...", flush=True)
+            rows = fetch_page(offset, limit, session)
+            if not rows:
+                break
+            created = insert(con, normalize(pd.DataFrame(rows)), created)
+            total += len(rows)
+            offset += len(rows)
+            if len(rows) < limit:
+                break
 
     con.execute(
         """
@@ -159,8 +212,10 @@ def main() -> None:
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--limit", type=int, help="número máximo de filas (muestra)")
     group.add_argument("--full", action="store_true", help="dataset completo")
+    group.add_argument("--desde", type=date.fromisoformat, metavar="YYYY-MM-DD",
+                       help="todos los contratos firmados desde esta fecha")
     args = parser.parse_args()
-    ingest(None if args.full else args.limit)
+    ingest(None if args.full else args.limit, desde=args.desde)
 
 
 if __name__ == "__main__":
