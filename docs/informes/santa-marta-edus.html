@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expediente 01: Santa Marta y su empresa EDUS · BricenoBot</title>
+<meta name="description" content="La Alcaldía de Santa Marta transfirió más de $1 billón COP por contratación directa a la EDUS, su propia empresa distrital, dos meses después de la advertencia de la Procuraduría.">
+<style>
+  :root {
+    --bg: #0B0A08;
+    --panel: #100E0A;
+    --ink: #EAE4D6;
+    --dim: #9A927F;
+    --faint: #625C4E;
+    --line: rgba(234, 228, 214, 0.12);
+    --line-soft: rgba(234, 228, 214, 0.06);
+    --red: #D2492F;
+    --red-soft: rgba(210, 73, 47, 0.14);
+    --amber: #C9963B;
+    --serif: Georgia, 'Times New Roman', Times, serif;
+    --mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: var(--serif); -webkit-font-smoothing: antialiased;
+    line-height: 1.7;
+  }
+  ::selection { background: var(--red); color: var(--bg); }
+  a { color: var(--red); text-decoration: none; border-bottom: 1px solid rgba(210,73,47,0.3); }
+  a:hover { border-bottom-color: var(--red); }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 28px; }
+  .micro {
+    font-family: var(--mono); font-size: 10.5px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim);
+  }
+
+  .topbar { border-bottom: 1px solid var(--line); }
+  .topbar-in {
+    max-width: 760px; margin: 0 auto; padding: 14px 28px;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 16px; flex-wrap: wrap;
+  }
+  .topbar a { color: var(--dim); border-bottom: none; }
+  .topbar a:hover { color: var(--ink); }
+
+  .report-header { padding: 80px 0 60px; position: relative; overflow: hidden; }
+  .report-header::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 70% 55% at 50% -10%, rgba(210, 73, 47, 0.08), transparent 70%);
+  }
+  .report-tag {
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 1px solid var(--line); border-radius: 3px;
+    padding: 7px 14px; margin-bottom: 28px;
+  }
+  h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 400; line-height: 1.1; letter-spacing: -0.015em;
+  }
+  h1 em { font-style: italic; color: var(--red); }
+  .lead {
+    margin-top: 24px; font-size: 18px; color: var(--dim);
+    line-height: 1.65; max-width: 640px;
+  }
+  .report-meta { margin-top: 32px; display: flex; gap: 24px; flex-wrap: wrap; }
+
+  article { padding: 0 0 80px; }
+  article h2 {
+    font-size: clamp(22px, 3vw, 30px); font-weight: 400;
+    margin: 64px 0 20px; letter-spacing: -0.01em;
+  }
+  article h2 em { font-style: italic; color: var(--dim); }
+  article p { margin-bottom: 18px; font-size: 16.5px; color: var(--ink); }
+  article ul, article ol { margin: 0 0 18px 24px; font-size: 16.5px; }
+  article li { margin-bottom: 8px; }
+  article strong { font-weight: 600; color: var(--ink); }
+
+  .callout {
+    border-left: 2px solid var(--red); padding: 16px 0 16px 24px;
+    margin: 32px 0; font-size: 17px; font-style: italic;
+    color: var(--ink); line-height: 1.7;
+  }
+
+  .disclaimer {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 4px; padding: 20px 24px; margin: 0 0 48px;
+    font-size: 14px; color: var(--dim); line-height: 1.7;
+  }
+
+  .table-wrap { overflow-x: auto; margin: 24px 0 32px; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--faint); font-weight: 400;
+    text-align: left; padding: 0 12px 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  th.r { text-align: right; padding-right: 0; }
+  td {
+    padding: 12px 12px 12px 0; border-bottom: 1px solid var(--line-soft);
+    font-size: 14px; vertical-align: top;
+  }
+  td.mono { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+  td.r { text-align: right; padding-right: 0; }
+  td.code { font-family: var(--mono); font-size: 12px; color: var(--dim); }
+  tr.highlight td { color: var(--red); font-weight: 600; }
+
+  /* alert badges */
+  .alert-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em;
+    color: var(--red); border: 1px solid var(--red-soft);
+    border-radius: 3px; padding: 5px 10px; margin: 0 8px 8px 0;
+  }
+
+  /* timeline */
+  .timeline { margin: 32px 0; }
+  .tl-item {
+    display: grid; grid-template-columns: 110px 1fr;
+    gap: 20px; padding: 18px 0; border-bottom: 1px solid var(--line-soft);
+    position: relative;
+  }
+  .tl-item::before {
+    content: ''; position: absolute; left: 119px; top: 0; bottom: 0;
+    width: 1px; background: var(--line-soft);
+  }
+  .tl-date { font-family: var(--mono); font-size: 13px; color: var(--dim); padding-top: 2px; }
+  .tl-date.red { color: var(--red); font-weight: 600; }
+  .tl-body { font-size: 15px; }
+  .tl-source { font-family: var(--mono); font-size: 11px; color: var(--faint); margin-top: 6px; }
+
+  footer { border-top: 1px solid var(--line); padding: 30px 0 40px; }
+  .foot-in {
+    max-width: 760px; margin: 0 auto; padding: 0 28px;
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  }
+  footer a { color: var(--dim); border-bottom: 1px solid var(--line); }
+  footer a:hover { color: var(--ink); }
+
+  .rv { opacity: 0; transform: translateY(14px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .rv.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; transition: none; } }
+  @media (max-width: 560px) {
+    .tl-item { grid-template-columns: 1fr; gap: 6px; }
+    .tl-item::before { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <a href="../" class="micro">← BricenoBot · Radar</a>
+    <span class="micro">Expediente 01 · Julio 2026</span>
+  </div>
+</div>
+
+<header class="report-header">
+  <div class="wrap">
+    <div class="report-tag micro">Expediente ampliado · Investigación estadística</div>
+    <h1>Santa Marta y su empresa <em>EDUS</em></h1>
+    <p class="lead">
+      La Alcaldía Distrital de Santa Marta transfirió en 2025 más de $1 billón COP por contratación
+      directa a la EDUS, su propia empresa distrital de desarrollo urbano. El grueso se firmó el 31 de
+      diciembre de 2025, dos meses después de que la Procuraduría advirtiera que ese esquema podría
+      constituir "evasión de la normativa de contratación estatal".
+    </p>
+    <div class="report-meta">
+      <span class="micro">Base: SECOP II, 5.101.581 contratos</span>
+      <span class="micro">Sujeto: Alcaldía de Santa Marta → EDUS</span>
+      <span class="micro">Generado: 2026-07-05</span>
+    </div>
+  </div>
+</header>
+
+<article>
+  <div class="wrap">
+
+    <div class="disclaimer rv">
+      <strong>Aviso metodológico.</strong> Este expediente documenta hechos verificables en registros públicos
+      (SECOP II, actuaciones de la Procuraduría, prensa) y los ordena cronológicamente. No afirma la comisión
+      de ningún delito ni falta disciplinaria por parte de persona o entidad alguna. Toda interpretación debe
+      tratarse como presunta hasta que los órganos de control competentes se pronuncien. Cada contrato citado
+      incluye su <code style="font-family:var(--mono);font-size:13px">id_contrato</code> para verificación directa en SECOP II.
+    </div>
+
+    <h2 class="rv">1. La señal <em>estadística</em></h2>
+
+    <p class="rv">El radar marcó a la Alcaldía de Santa Marta con tres alertas mayores en 2025:</p>
+
+    <div class="rv" style="margin: 20px 0 32px; display: flex; flex-wrap: wrap;">
+      <span class="alert-badge">F08 · 91% sin competencia · $1,42B</span>
+      <span class="alert-badge">F04 · HHI 0,52 · Proveedores dominantes</span>
+      <span class="alert-badge">F01 · 17 contratos EDUS · $1,02B</span>
+    </div>
+
+    <p class="rv">
+      La alerta F01 (posible fraccionamiento) es la más grande de toda la base de 42.335 alertas:
+      17 contratos sin competencia con un mismo proveedor (EDUS) por $1,02 billones en un solo año.
+    </p>
+
+    <h2 class="rv">2. El <em>mecanismo</em></h2>
+
+    <p class="rv">La estructura tiene tres pasos, todos visibles en SECOP II:</p>
+
+    <ol class="rv">
+      <li>
+        <strong>La Alcaldía firma convenios interadministrativos con la EDUS por contratación directa.</strong>
+        Es legal: los convenios entre entidades públicas están exceptuados de licitación. En 2025 fueron
+        17 contratos por $1.023.871 millones; el histórico del par asciende a 29 contratos por $1.181.936 millones.
+      </li>
+      <li>
+        <strong>La EDUS, como empresa industrial y comercial del Estado, no contrata por Ley 80 sino por régimen
+        especial</strong> (derecho privado con manual propio). Adjudica las obras a consorcios y uniones temporales
+        mediante sus propios "procesos de selección".
+      </li>
+      <li>
+        <strong>La diferencia queda como honorarios de gerencia.</strong> En los proyectos trazables, la EDUS
+        retiene alrededor del 8%: recibió $8.816M para El Pando y contrató la obra por $8.079M; recibió
+        $8.441M para El Parque y contrató por $7.763M; recibió $8.042M para la vía de Minca y contrató por $7.410M.
+      </li>
+    </ol>
+
+    <div class="callout rv">
+      Balance agregado en SECOP II: la EDUS recibió $1.025.937 millones del Estado en 2025 (casi todo de
+      la Alcaldía) y solo ha contratado hacia afuera $83.264 millones en 2025 y $46.073 millones en 2026.
+      La mayor parte del dinero comprometido aún no se ha convertido en contratos de obra visibles.
+    </div>
+
+    <h2 class="rv">3. La <em>cronología</em></h2>
+
+    <div class="timeline rv">
+      <div class="tl-item">
+        <span class="tl-date">2025-10-20</span>
+        <div>
+          <div class="tl-body">La Procuraduría advierte al alcalde Carlos Pinedo que canalizar la malla vial ($120.000M de sobretasa a la gasolina) vía EDUS podría constituir "evasión de la normativa de contratación estatal", con la EDUS como mera ejecutora operativa.</div>
+          <div class="tl-source">Fuente: Infobae</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-date">2025-10-30</span>
+        <div>
+          <div class="tl-body">La EDUS declara desierto el proceso de la malla vial (Resolución 088).</div>
+          <div class="tl-source">Fuente: Infobae</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-date">2025-12-04</span>
+        <div>
+          <div class="tl-body">La EDUS adjudica la construcción en pavimento rígido de vías urbanas a UT Pavimentar Santa Marta por $25.907M.</div>
+          <div class="tl-source">CO1.PCCNTR.8667641</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-date red">2025-12-31</span>
+        <div>
+          <div class="tl-body"><strong>La Alcaldía firma 18 contratos en un solo día por $957.928M.</strong> Seis son para la EDUS, incluido el convenio de gerencia del acueducto El Curval por $893.052M.</div>
+          <div class="tl-source">CO1.PCCNTR.8750509 y otros</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-date red">2026-01-30</span>
+        <div>
+          <div class="tl-body">Último día hábil antes de la Ley de Garantías: la Alcaldía firma 3 contratos más con la EDUS, incluida una gerencia integral por $34.391M.</div>
+          <div class="tl-source">CO1.PCCNTR.9300942</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-date">2026-02-02</span>
+        <div>
+          <div class="tl-body">Contrato de $58.425M con la EDUS para modernización y expansión del alumbrado.</div>
+          <div class="tl-source">CO1.PCCNTR.9319615</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-date">2026-03 a 04</span>
+        <div>
+          <div class="tl-body">En plena vigencia de la Ley de Garantías, la EDUS adjudica bajo régimen especial al menos 5 obras por más de $30.000M (Consorcio El Parque $7.763M, Consorcio Minca Vial $7.410M, Consorcio Obras Especiales Pluviales $9.417M, entre otras).</div>
+          <div class="tl-source">CO1.PCCNTR.9376926, CO1.PCCNTR.9332952, CO1.PCCNTR.9425720</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-date">2026-06</span>
+        <div>
+          <div class="tl-body">La EDUS adjudica la obra de la planta El Curval al Consorcio Planta Curval (Caribbean Region Water Conservancy Engineering 40%, CM Ingeniería y Construcción 40%, CFD Ingeniería 20%).</div>
+          <div class="tl-source">Prensa: SieteDías, La FM</div>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="rv">4. El contrato de <em>El Curval</em></h2>
+
+    <p class="rv">
+      El convenio <code style="font-family:var(--mono);font-size:14px;color:var(--red)">CO1.PCCNTR.8750509</code>
+      (proceso <code style="font-family:var(--mono);font-size:14px;color:var(--dim)">CO1.BDOS.9341324</code>)
+      es el contrato individual más grande firmado por la Alcaldía de Santa Marta en toda la base:
+    </p>
+
+    <div class="table-wrap rv">
+      <table>
+        <tbody>
+          <tr><td class="micro" style="width:140px;border-bottom-color:var(--line)">Valor</td><td style="border-bottom-color:var(--line);font-size:16px"><strong>$893.052 millones COP</strong></td></tr>
+          <tr><td class="micro">Firma</td><td>31 de diciembre de 2025</td></tr>
+          <tr><td class="micro">Vigencia</td><td>10 de abril de 2026 a 31 de diciembre de 2037 (12 años)</td></tr>
+          <tr><td class="micro">Modalidad</td><td>Contratación directa</td></tr>
+          <tr><td class="micro">Justificación</td><td style="color:var(--amber)">"Contratos o convenios Interadministrativos (valor cero)"</td></tr>
+          <tr><td class="micro">Objeto</td><td>Gerencia integral del proyecto "Construcción del sistema de acueducto denominado El Curval"</td></tr>
+          <tr><td class="micro">Pagado a la fecha</td><td>$0</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="rv">
+      El proyecto en sí (planta de 800 litros por segundo, línea de conducción de 10,5 km) responde a una
+      necesidad real y antigua: la crisis de agua de Santa Marta, cuyo intento anterior de solución (contrato
+      de $1,7 billones de la administración anterior) colapsó en 2023 y también terminó bajo investigación
+      de la Procuraduría.
+    </p>
+
+    <div class="callout rv">
+      La pregunta que este expediente deja planteada no es si el acueducto es necesario, sino por qué la
+      gerencia de la obra pública más grande de la historia de la ciudad se adjudicó a dedo un 31 de diciembre,
+      bajo una justificación de "valor cero", a una empresa que ya estaba advertida por la Procuraduría
+      como posible vehículo de evasión normativa.
+    </div>
+
+    <h2 class="rv">5. Preguntas <em>abiertas</em></h2>
+
+    <ol class="rv">
+      <li>¿Cuál es la corresponsabilidad técnica y financiera real de la EDUS en El Curval, el criterio que la Procuraduría señaló como el que desnaturaliza los convenios interadministrativos?</li>
+      <li>¿Cuánto retendrá la EDUS como honorarios de gerencia sobre los $893.052M y bajo qué tarifa?</li>
+      <li>¿Quiénes integran los consorcios adjudicatarios de la EDUS y qué relación tienen entre sí? (Requiere cruce con RUES y Cuentas Claras, fase 2 del radar.)</li>
+      <li>¿Las adjudicaciones de la EDUS entre marzo y junio de 2026, en vigencia de la Ley de Garantías, se amparan en excepciones válidas del régimen especial?</li>
+    </ol>
+
+    <h2 class="rv">Verificación</h2>
+
+    <p class="rv">
+      Todos los contratos citados son consultables en
+      <a href="https://www.datos.gov.co/Estad-sticas-Nacionales/SECOP-II-Contratos-Electr-nicos/jbjy-vk9h">SECOP II</a>
+      por su <code style="font-family:var(--mono);font-size:14px">id_contrato</code>.
+    </p>
+
+    <pre class="rv" style="background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:18px 22px;font-family:var(--mono);font-size:13px;color:var(--dim);overflow-x:auto;margin:16px 0 32px"><code>python -m src.ingest --desde 2018-08-07
+python -m src.flags</code></pre>
+
+    <p class="micro rv" style="margin-bottom:12px">Fuentes de prensa y actuaciones públicas:</p>
+    <ul class="rv" style="font-size:14px;color:var(--dim)">
+      <li><a href="https://www.infobae.com/colombia/2025/10/31/procuraduria-alerta-posible-evasion-de-normas-en-millonario-contrato-vial-de-santa-marta/">Procuraduría alerta posible evasión de normas (Infobae, 2025-10-31)</a></li>
+      <li><a href="https://sietedias.co/en-santa-marta-adjudican-el-proyecto-planta-el-curval/">Adjudican el proyecto Planta El Curval (SieteDías)</a></li>
+      <li><a href="https://www.lafm.com.co/actualidad/tres-firmas-construiran-proyecto-de-agua-santa-marta-planta-curval-401472">Ya hay constructor para la obra (La FM)</a></li>
+      <li><a href="https://www.opinioncaribe.com/2026/04/27/el-curval-la-arriesgada-apuesta-de-carlos-pinedo-para-mitigar-el-deficit-hidrico-en-santa-marta/">La arriesgada apuesta de Carlos Pinedo (Opinión Caribe, 2026-04-27)</a></li>
+    </ul>
+
+  </div>
+</article>
+
+<footer>
+  <div class="foot-in">
+    <span class="micro">BricenoBot · Radar anticorrupción · Licencia MIT</span>
+    <a class="micro" href="../">Volver al radar</a>
+  </div>
+</footer>
+
+<script>
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.rv').forEach((el) => io.observe(el));
+</script>
+</body>
+</html>

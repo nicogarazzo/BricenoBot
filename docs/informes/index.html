@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informes · BricenoBot · Radar Anticorrupción</title>
+<meta name="description" content="Informes y expedientes de investigación estadística del radar anticorrupción BricenoBot sobre datos abiertos de SECOP II.">
+<style>
+  :root {
+    --bg: #0B0A08;
+    --panel: #100E0A;
+    --ink: #EAE4D6;
+    --dim: #9A927F;
+    --faint: #625C4E;
+    --line: rgba(234, 228, 214, 0.12);
+    --line-soft: rgba(234, 228, 214, 0.06);
+    --red: #D2492F;
+    --red-soft: rgba(210, 73, 47, 0.14);
+    --amber: #C9963B;
+    --serif: Georgia, 'Times New Roman', Times, serif;
+    --mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: var(--serif); -webkit-font-smoothing: antialiased;
+    line-height: 1.7;
+  }
+  ::selection { background: var(--red); color: var(--bg); }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 28px; }
+  .micro {
+    font-family: var(--mono); font-size: 10.5px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim);
+  }
+
+  .topbar { border-bottom: 1px solid var(--line); }
+  .topbar-in {
+    max-width: 860px; margin: 0 auto; padding: 14px 28px;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 16px; flex-wrap: wrap;
+  }
+  .topbar a { color: var(--dim); }
+  .topbar a:hover { color: var(--ink); }
+
+  .page-header { padding: 80px 0 60px; position: relative; overflow: hidden; }
+  .page-header::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 70% 55% at 50% -10%, rgba(210, 73, 47, 0.08), transparent 70%);
+  }
+  .stamp {
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 1px solid var(--line); border-radius: 3px;
+    padding: 7px 14px; margin-bottom: 28px;
+  }
+  h1 {
+    font-size: clamp(36px, 5.5vw, 60px);
+    font-weight: 400; line-height: 1.08; letter-spacing: -0.015em;
+  }
+  h1 em { font-style: italic; color: var(--red); }
+  .page-sub {
+    margin-top: 24px; font-size: 18px; color: var(--dim);
+    line-height: 1.65; max-width: 620px;
+  }
+
+  /* report cards */
+  .reports { padding: 0 0 100px; }
+  .report-card {
+    display: block; border: 1px solid var(--line); border-radius: 4px;
+    padding: 36px 34px; margin-bottom: 20px;
+    background: var(--bg); transition: all 0.3s ease;
+    position: relative; overflow: hidden;
+  }
+  .report-card::after {
+    content: '→'; position: absolute; right: 34px; top: 38px;
+    font-family: var(--mono); font-size: 18px; color: var(--faint);
+    transition: all 0.3s ease;
+  }
+  .report-card:hover {
+    background: var(--panel); border-color: rgba(210, 73, 47, 0.3);
+  }
+  .report-card:hover::after { color: var(--red); transform: translateX(4px); }
+  .report-card .tag {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--red); margin-bottom: 14px;
+  }
+  .report-card h2 {
+    font-size: clamp(22px, 3vw, 28px); font-weight: 400;
+    line-height: 1.25; margin-bottom: 14px; padding-right: 40px;
+  }
+  .report-card .desc {
+    font-size: 15px; color: var(--dim); line-height: 1.65;
+    max-width: 580px;
+  }
+  .report-card .meta-row {
+    margin-top: 20px; display: flex; gap: 20px; flex-wrap: wrap;
+  }
+
+  footer { border-top: 1px solid var(--line); padding: 30px 0 40px; }
+  .foot-in {
+    max-width: 860px; margin: 0 auto; padding: 0 28px;
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  }
+  footer a { color: var(--dim); border-bottom: 1px solid var(--line); }
+  footer a:hover { color: var(--ink); }
+
+  .rv { opacity: 0; transform: translateY(14px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .rv.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <a href="../" class="micro">← BricenoBot · Radar</a>
+    <span class="micro">Informes publicados</span>
+  </div>
+</div>
+
+<header class="page-header">
+  <div class="wrap">
+    <div class="stamp micro">BricenoBot · Informes de investigación</div>
+    <h1>Informes y <em>expedientes</em></h1>
+    <p class="page-sub">
+      Cada informe nace de una señal estadística detectada por el radar. Los datos son públicos,
+      la metodología es auditable y cada contrato citado incluye su identificador para verificación
+      directa en SECOP II.
+    </p>
+  </div>
+</header>
+
+<section class="reports">
+  <div class="wrap">
+
+    <a href="el-afan-de-enero" class="report-card rv">
+      <div class="tag">Informe · Contratación pre-electoral</div>
+      <h2>El afán de enero: 486.013 contratos en un mes</h2>
+      <p class="desc">
+        En enero de 2026 el Estado colombiano firmó 486.013 contratos por $35,7 billones COP,
+        3,4 veces los contratos de enero de 2025. El 95% fueron adjudicados a dedo antes de que
+        la Ley de Garantías congelara la contratación directa. El patrón se repite: en enero
+        de 2022 (también pre-electoral) fueron 293.275.
+      </p>
+      <div class="meta-row">
+        <span class="micro">Julio 2026</span>
+        <span class="micro">486.013 contratos · $35,7B COP</span>
+      </div>
+    </a>
+
+    <a href="santa-marta-edus" class="report-card rv">
+      <div class="tag">Expediente 01 · Posible fraccionamiento · F01</div>
+      <h2>Santa Marta y su empresa EDUS</h2>
+      <p class="desc">
+        La Alcaldía transfirió $1,02 billones a su EICE por contratación directa en 2025.
+        El 31 de diciembre firmó 18 contratos por $957.928M, incluido el convenio de El Curval
+        por $893.052M a 12 años con justificación "valor cero". Dos meses antes, la Procuraduría
+        había advertido posible evasión normativa. La EDUS siguió adjudicando durante la Ley de Garantías.
+      </p>
+      <div class="meta-row">
+        <span class="micro">Julio 2026</span>
+        <span class="micro">$1,02 billones · Alcalde Carlos Pinedo</span>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<footer>
+  <div class="foot-in">
+    <span class="micro">BricenoBot · Radar anticorrupción · Licencia MIT</span>
+    <a class="micro" href="../">Volver al radar</a>
+  </div>
+</footer>
+
+<script>
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.rv').forEach((el) => io.observe(el));
+</script>
+</body>
+</html>

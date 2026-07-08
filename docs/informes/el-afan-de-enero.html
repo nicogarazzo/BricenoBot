@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El afán de enero: 486.013 contratos en un mes · BricenoBot</title>
+<meta name="description" content="En enero de 2026 el Estado colombiano firmó 486.013 contratos por $35,7 billones COP: 3,4 veces los contratos de enero de 2025, el 95% adjudicados a dedo antes de la Ley de Garantías.">
+<style>
+  :root {
+    --bg: #0B0A08;
+    --panel: #100E0A;
+    --ink: #EAE4D6;
+    --dim: #9A927F;
+    --faint: #625C4E;
+    --line: rgba(234, 228, 214, 0.12);
+    --line-soft: rgba(234, 228, 214, 0.06);
+    --red: #D2492F;
+    --red-soft: rgba(210, 73, 47, 0.14);
+    --amber: #C9963B;
+    --serif: Georgia, 'Times New Roman', Times, serif;
+    --mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: var(--serif); -webkit-font-smoothing: antialiased;
+    line-height: 1.7;
+  }
+  ::selection { background: var(--red); color: var(--bg); }
+  a { color: var(--red); text-decoration: none; border-bottom: 1px solid rgba(210,73,47,0.3); }
+  a:hover { border-bottom-color: var(--red); }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 28px; }
+  .micro {
+    font-family: var(--mono); font-size: 10.5px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim);
+  }
+
+  /* topbar */
+  .topbar { border-bottom: 1px solid var(--line); }
+  .topbar-in {
+    max-width: 760px; margin: 0 auto; padding: 14px 28px;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 16px; flex-wrap: wrap;
+  }
+  .topbar a { color: var(--dim); border-bottom: none; }
+  .topbar a:hover { color: var(--ink); }
+
+  /* header */
+  .report-header { padding: 80px 0 60px; position: relative; overflow: hidden; }
+  .report-header::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 70% 55% at 50% -10%, rgba(210, 73, 47, 0.08), transparent 70%);
+  }
+  .report-tag {
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 1px solid var(--line); border-radius: 3px;
+    padding: 7px 14px; margin-bottom: 28px;
+  }
+  h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 400; line-height: 1.1; letter-spacing: -0.015em;
+  }
+  h1 em { font-style: italic; color: var(--red); }
+  .lead {
+    margin-top: 24px; font-size: 18px; color: var(--dim);
+    line-height: 1.65; max-width: 640px;
+  }
+  .report-meta { margin-top: 32px; display: flex; gap: 24px; flex-wrap: wrap; }
+
+  /* content */
+  article { padding: 0 0 80px; }
+  article h2 {
+    font-size: clamp(22px, 3vw, 30px); font-weight: 400;
+    margin: 64px 0 20px; letter-spacing: -0.01em;
+  }
+  article h2 em { font-style: italic; color: var(--dim); }
+  article p { margin-bottom: 18px; font-size: 16.5px; color: var(--ink); }
+  article ul, article ol { margin: 0 0 18px 24px; font-size: 16.5px; }
+  article li { margin-bottom: 8px; }
+  article strong { font-weight: 600; color: var(--ink); }
+
+  /* callout */
+  .callout {
+    border-left: 2px solid var(--red); padding: 16px 0 16px 24px;
+    margin: 32px 0; font-size: 17px; font-style: italic;
+    color: var(--ink); line-height: 1.7;
+  }
+
+  /* disclaimer */
+  .disclaimer {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 4px; padding: 20px 24px; margin: 0 0 48px;
+    font-size: 14px; color: var(--dim); line-height: 1.7;
+  }
+
+  /* tables */
+  .table-wrap { overflow-x: auto; margin: 24px 0 32px; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--faint); font-weight: 400;
+    text-align: left; padding: 0 12px 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  th.r { text-align: right; padding-right: 0; }
+  td {
+    padding: 12px 12px 12px 0; border-bottom: 1px solid var(--line-soft);
+    font-size: 14px; vertical-align: top;
+  }
+  td.mono { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+  td.r { text-align: right; padding-right: 0; }
+  tr.highlight td { color: var(--red); font-weight: 600; }
+
+  /* footer */
+  footer { border-top: 1px solid var(--line); padding: 30px 0 40px; }
+  .foot-in {
+    max-width: 760px; margin: 0 auto; padding: 0 28px;
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  }
+  footer a { color: var(--dim); border-bottom: 1px solid var(--line); }
+  footer a:hover { color: var(--ink); }
+
+  /* reveal */
+  .rv { opacity: 0; transform: translateY(14px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .rv.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <a href="../" class="micro">← BricenoBot · Radar</a>
+    <span class="micro">Informe · Julio 2026</span>
+  </div>
+</div>
+
+<header class="report-header">
+  <div class="wrap">
+    <div class="report-tag micro">Informe BricenoBot · Contratación pre-electoral</div>
+    <h1>El afán de enero: 486.013 contratos <em>en un mes</em></h1>
+    <p class="lead">
+      En enero de 2026 el Estado colombiano firmó 486.013 contratos por $35,7 billones COP:
+      3,4 veces los contratos de enero de 2025, el 95% adjudicados a dedo justo antes de que
+      la Ley de Garantías electorales congelara la contratación directa.
+    </p>
+    <div class="report-meta">
+      <span class="micro">Base: SECOP II, 5.101.581 contratos</span>
+      <span class="micro">Periodo: 2018-08-07 a 2026-07-01</span>
+      <span class="micro">Generado: 2026-07-05</span>
+    </div>
+  </div>
+</header>
+
+<article>
+  <div class="wrap">
+
+    <div class="disclaimer rv">
+      <strong>Aviso metodológico.</strong> Este informe describe patrones estadísticos en datos públicos oficiales.
+      Ninguna cifra constituye una acusación contra entidad o persona alguna. La contratación previa a la Ley de
+      Garantías es legal; lo que este informe documenta es su escala, su composición y su concentración temporal,
+      para que ciudadanos, periodistas y órganos de control decidan dónde mirar.
+    </div>
+
+    <h2 class="rv">1. Un enero <em>sin precedentes</em></h2>
+
+    <p class="rv">Contratos firmados en enero de cada año en SECOP II:</p>
+
+    <div class="table-wrap rv">
+      <table>
+        <thead>
+          <tr><th>Enero</th><th class="r">Contratos</th><th class="r">Valor (billones COP)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>2019</td><td class="mono r">44.313</td><td class="mono r">$18,1</td></tr>
+          <tr><td>2020</td><td class="mono r">40.907</td><td class="mono r">$3,9</td></tr>
+          <tr><td>2021</td><td class="mono r">68.073</td><td class="mono r">$5,1</td></tr>
+          <tr class="highlight"><td>2022 (electoral)</td><td class="mono r">293.275</td><td class="mono r">$16,8</td></tr>
+          <tr><td>2023</td><td class="mono r">125.385</td><td class="mono r">$10,4</td></tr>
+          <tr><td>2024</td><td class="mono r">99.750</td><td class="mono r">$9,1</td></tr>
+          <tr><td>2025</td><td class="mono r">144.558</td><td class="mono r">$17,0</td></tr>
+          <tr class="highlight"><td>2026 (electoral)</td><td class="mono r">486.013</td><td class="mono r">$35,7</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="rv">
+      El patrón es inequívoco: los dos eneros que anteceden elecciones nacionales (2022 y 2026) rompen
+      la escala. Y 2026 no solo repite el fenómeno de 2022: lo multiplica por 1,7 en contratos y por
+      2,1 en valor.
+    </p>
+
+    <h2 class="rv">2. La carrera contra <em>el reloj</em></h2>
+
+    <p class="rv">
+      La restricción a la contratación directa de la Ley 996 de 2005 rige durante los cuatro meses
+      previos a la elección presidencial. Los diez días con más contratos firmados de enero de 2026:
+    </p>
+
+    <div class="table-wrap rv">
+      <table>
+        <thead>
+          <tr><th>Día</th><th class="r">Contratos</th><th class="r">Valor (miles de millones)</th></tr>
+        </thead>
+        <tbody>
+          <tr class="highlight"><td>30 de enero (viernes)</td><td class="mono r">43.036</td><td class="mono r">$5.767</td></tr>
+          <tr><td>29 de enero</td><td class="mono r">33.274</td><td class="mono r">$3.254</td></tr>
+          <tr><td>23 de enero</td><td class="mono r">32.281</td><td class="mono r">$1.716</td></tr>
+          <tr><td>28 de enero</td><td class="mono r">28.527</td><td class="mono r">$2.346</td></tr>
+          <tr><td>26 de enero</td><td class="mono r">27.627</td><td class="mono r">$1.804</td></tr>
+          <tr><td>27 de enero</td><td class="mono r">27.227</td><td class="mono r">$1.970</td></tr>
+          <tr><td>22 de enero</td><td class="mono r">25.358</td><td class="mono r">$1.649</td></tr>
+          <tr><td>19 de enero</td><td class="mono r">25.285</td><td class="mono r">$1.342</td></tr>
+          <tr><td>16 de enero</td><td class="mono r">24.377</td><td class="mono r">$1.559</td></tr>
+          <tr><td>20 de enero</td><td class="mono r">23.975</td><td class="mono r">$1.245</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="rv">
+      El 30 de enero, último día hábil antes de la entrada en vigor de la restricción, se firmaron
+      43.036 contratos: casi tantos como en todo enero de 2020. En la última semana del mes (26 al 30)
+      se firmaron cerca de 160.000 contratos.
+    </p>
+
+    <p class="rv">
+      Y después, el silencio: febrero cayó a 22.103 contratos, marzo a 17.071, abril a 15.947.
+      Meses que en 2025 promediaban 70.000-80.000 contratos quedaron en una quinta parte.
+      La contratación no se distribuyó: se adelantó en masa.
+    </p>
+
+    <h2 class="rv">3. Qué se firmó: una nómina paralela <em>a escala nacional</em></h2>
+
+    <p class="rv">La composición de los 486.013 contratos de enero de 2026:</p>
+
+    <ul class="rv">
+      <li><strong>96% fueron prestación de servicios</strong> (467.449 contratos).</li>
+      <li><strong>95% se firmaron con personas naturales</strong> (463.896 contratos por $17,0 billones).</li>
+      <li><strong>92% por contratación directa</strong> (446.137) y otro 7,6% por régimen especial: en la práctica, la totalidad sin competencia.</li>
+      <li><strong>121.038 contratos contienen literalmente "apoyo a la gestión" en su objeto</strong>, por $3,4 billones.</li>
+      <li>El contrato OPS típico con persona natural: <strong>$28 millones de mediana</strong> ($36,4 millones de promedio), consistente con vinculaciones de 3 a 6 meses.</li>
+      <li><strong>434.127 personas y empresas distintas</strong> recibieron al menos un contrato ese mes. De ellas, <strong>58.383 (13%) nunca antes habían contratado con el Estado</strong> en SECOP II.</li>
+    </ul>
+
+    <div class="callout rv">
+      La denuncia conocida de la "nómina paralela" pre-Ley de Garantías habló de 101.400 órdenes de
+      prestación de servicios. La base completa muestra que el fenómeno nacional fue 4,5 veces mayor:
+      455.568 OPS a personas naturales en un solo mes.
+    </div>
+
+    <h2 class="rv">4. Quién firmó: el frenesí fue <em>territorial</em></h2>
+
+    <p class="rv">
+      El 64% de los contratos de enero (313.356) los firmaron entidades del orden territorial
+      (alcaldías, gobernaciones y sus entidades), que son precisamente las que la Ley de Garantías
+      restringe con mayor severidad en época electoral.
+    </p>
+
+    <p class="rv">
+      <strong>590 entidades firmaron en enero de 2026 más de 5 veces su propia media mensual histórica</strong>
+      (entre las que firmaron al menos 100 contratos):
+    </p>
+
+    <div class="table-wrap rv">
+      <table>
+        <thead>
+          <tr><th>Entidad</th><th class="r">Contratos ene-2026</th><th class="r">Veces su media</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>SENA Regional Boyacá (grupo administrativo)</td><td class="mono r">35.637</td><td class="mono r">12,6x</td></tr>
+          <tr><td>Secretaría General, Alcaldía Mayor de Bogotá</td><td class="mono r">17.824</td><td class="mono r">10,5x</td></tr>
+          <tr><td>ICBF Regional Cundinamarca</td><td class="mono r">14.436</td><td class="mono r">14,0x</td></tr>
+          <tr><td>Santiago de Cali, Dpto. Adm. de Hacienda</td><td class="mono r">13.713</td><td class="mono r">6,8x</td></tr>
+          <tr><td>Institución Universitaria ITM</td><td class="mono r">7.560</td><td class="mono r">11,1x</td></tr>
+          <tr><td>Distrito de Barranquilla</td><td class="mono r">6.920</td><td class="mono r">13,8x</td></tr>
+          <tr><td>Alcaldía de Cartagena de Indias</td><td class="mono r">6.218</td><td class="mono r">13,6x</td></tr>
+          <tr><td>Agencia Nacional de Tierras</td><td class="mono r">6.159</td><td class="mono r">15,6x</td></tr>
+          <tr><td>Sec. Educación de Cundinamarca</td><td class="mono r">4.646</td><td class="mono r">12,2x</td></tr>
+          <tr><td>Municipio de San José de Cúcuta</td><td class="mono r">4.021</td><td class="mono r">14,0x</td></tr>
+          <tr class="highlight"><td>UARIV (Unidad para las Víctimas)</td><td class="mono r">3.164</td><td class="mono r">21,1x</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="rv">5. Lo que este informe <em>no dice</em></h2>
+
+    <p class="rv">
+      Este informe no afirma que ningún contrato individual sea irregular. Adelantar contratación antes
+      de la Ley de Garantías es legal y, en parte, previsible: las entidades argumentan continuidad del
+      servicio. Lo que los datos sí permiten afirmar es que en enero de 2026 ocurrió la mayor concentración
+      de contratación sin competencia de la que haya registro en SECOP II, que su composición es
+      abrumadoramente OPS con personas naturales, y que su ritmo diario siguió con exactitud el calendario
+      electoral y no las necesidades operativas de las entidades.
+    </p>
+
+    <p class="rv">
+      Las preguntas que quedan abiertas, y que exigen cruces adicionales (Cuentas Claras, SIGEP, RUES),
+      son las de siempre: cuántos de esos 463.896 contratistas trabajan en las campañas, cuántos son
+      cuotas políticas y cuántos contratos se ejecutarán realmente.
+    </p>
+
+    <h2 class="rv">Reproducibilidad</h2>
+
+    <p class="rv">
+      Cada número de este informe sale de consultas SQL sobre el dataset público
+      <a href="https://www.datos.gov.co/Estad-sticas-Nacionales/SECOP-II-Contratos-Electr-nicos/jbjy-vk9h">SECOP II jbjy-vk9h</a>
+      de datos.gov.co. Para reproducirlo:
+    </p>
+
+    <pre class="rv" style="background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:18px 22px;font-family:var(--mono);font-size:13px;color:var(--dim);overflow-x:auto;margin:16px 0 32px"><code>python -m src.ingest --desde 2018-08-07
+python -m src.flags</code></pre>
+
+    <p class="rv">
+      Las consultas específicas de este informe están en el historial del repositorio.
+      Toda corrección es bienvenida vía <a href="https://github.com/nicogarazzo/BricenoBot/issues">issues</a>.
+    </p>
+
+  </div>
+</article>
+
+<footer>
+  <div class="foot-in">
+    <span class="micro">BricenoBot · Radar anticorrupción · Licencia MIT</span>
+    <a class="micro" href="../">Volver al radar</a>
+  </div>
+</footer>
+
+<script>
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.rv').forEach((el) => io.observe(el));
+</script>
+</body>
+</html>
