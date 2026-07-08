@@ -1,5 +1,7 @@
 {
+  "buildCommand": "",
   "outputDirectory": "docs",
+  "framework": null,
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
